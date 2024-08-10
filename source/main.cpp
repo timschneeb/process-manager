@@ -70,12 +70,11 @@ typedef struct {
 } processInfo;
 
 bool getProcessInfo(u64 pid, processInfo &out, infoResults &results) {
-    Result res;
     Handle handle;
     out.pid = pid;
     // fails on tesla and prcoessess with cheats
     results.DebugActiveProcess = svcDebugActiveProcess(&handle, pid);
-    if(R_FAILED(res)) {
+    if(R_FAILED(results.DebugActiveProcess)) {
         svcCloseHandle(handle);
     }
     else {
@@ -187,7 +186,7 @@ public:
         if(tid != 0) {
             auto *terminateOption = new tsl::elm::ListItem("Terminate");
             terminateOption->setClickListener([tid](u64 keys) {
-                if (keys & KEY_A) {
+                if (keys & HidNpadButton_A) {
                     pmshellTerminateProgram(tid);
                     return true;
                 }
@@ -197,7 +196,7 @@ public:
 
             auto *launchOption = new tsl::elm::ListItem("Launch");
             launchOption->setClickListener([this, tid](u64 keys) {
-                if (keys & KEY_A) {
+                if (keys & HidNpadButton_A) {
                     // changing pid could cause an issue
                     launchProgram(tid, &info.pid);
                     return true;
@@ -210,7 +209,7 @@ public:
         if(R_SUCCEEDED(results.DebugActiveProcess)) {
             auto *pauseOption = new tsl::elm::ListItem("Pause");
             pauseOption->setClickListener([this](u64 keys) {
-                if (keys & KEY_A) {
+                if (keys & HidNpadButton_A) {
                     svcDebugActiveProcess(&handle, info.pid);
                     return true;
                 }
@@ -222,7 +221,7 @@ public:
             // These options make the top info un-viewable
             auto *unpauseOption = new tsl::elm::ListItem("Unpause");
             unpauseOption->setClickListener([this](u64 keys) {
-                if (keys & KEY_A) {
+                if (keys & HidNpadButton_A) {
                     svcCloseHandle(handle);
                     return true;
                 }
@@ -283,7 +282,7 @@ public:
                 processListItem = new tsl::elm::ListItem(stringFormat("%s [%lx]", info.debugInfo.name, info.debugInfo.tid));
             }
             processListItem->setClickListener([pid](u64 keys) {
-                if (keys & KEY_A) {
+                if (keys & HidNpadButton_A) {
                     tsl::changeTo<DetailsMenu>(pid);
                     return true;
                 }
@@ -302,8 +301,8 @@ public:
     }
 
     // Called once every frame to handle inputs not handled by other UI elements
-    virtual bool handleInput(u64 keysDown, u64 keysHeld, touchPosition touchInput, JoystickPosition leftJoyStick, JoystickPosition rightJoyStick) override {
-        return false;   // Return true here to singal the inputs have been consumed
+    virtual bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState &touchPos, HidAnalogStickState leftJoyStick, HidAnalogStickState rightJoyStick) override {
+        return false;
     }
 };
 
@@ -348,7 +347,7 @@ public:
                     //list->addItem(new SmallText(stringFormat("pmdmntGetProcessId %x", res)));
                     auto *launchOption = new tsl::elm::ListItem(dirEnt.path().filename().string());
                     launchOption->setClickListener([tid](u64 keys) {
-                        if (keys & KEY_A) {
+                        if (keys & HidNpadButton_A) {
                             launchProgram(tid, nullptr);
                             return true;
                         }
@@ -373,8 +372,8 @@ public:
     }
 
     // Called once every frame to handle inputs not handled by other UI elements
-    virtual bool handleInput(u64 keysDown, u64 keysHeld, touchPosition touchInput, JoystickPosition leftJoyStick, JoystickPosition rightJoyStick) override {
-        return false;   // Return true here to singal the inputs have been consumed
+    virtual bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState &touchPos, HidAnalogStickState leftJoyStick, HidAnalogStickState rightJoyStick) override {
+        return false;
     }
 };
 
@@ -389,7 +388,7 @@ public:
 
         auto *userListItem = new tsl::elm::ListItem("User processes");
         userListItem->setClickListener([](u64 keys) {
-           if (keys & KEY_A) {
+           if (keys & HidNpadButton_A) {
                tsl::changeTo<UserProcessesMenu>();
                return true;
            }
@@ -400,7 +399,7 @@ public:
 
         auto *systemListItem = new tsl::elm::ListItem("System processes");
         systemListItem->setClickListener([](u64 keys) {
-           if (keys & KEY_A) {
+           if (keys & HidNpadButton_A) {
                tsl::changeTo<SystemProcessesMenu>();
                return true;
            }
@@ -413,7 +412,7 @@ public:
 
        auto *launchListItem = new tsl::elm::ListItem("Launch a process");
        launchListItem->setClickListener([](u64 keys) {
-          if (keys & KEY_A) {
+          if (keys & HidNpadButton_A) {
               tsl::changeTo<LaunchMenu>();
               return true;
           }
