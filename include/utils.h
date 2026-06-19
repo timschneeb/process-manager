@@ -101,9 +101,9 @@ typedef struct {
             u32 faultRegister;
         };
     };
-} DebugEventInfo;
+} DebugEventInfo2;
 
-inline Result svcGetDebugEventInfo(DebugEventInfo* event_out, Handle debug)
+inline Result svcGetDebugEventInfo(DebugEventInfo2* event_out, Handle debug)
 {
-    return svcGetDebugEvent((u8*)event_out, debug);
+    return svcGetDebugEvent((DebugEventInfo*)(u8*)event_out, debug);
 }

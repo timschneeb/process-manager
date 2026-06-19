@@ -62,7 +62,7 @@ typedef struct {
 
 typedef struct {
     u64 pid;
-    DebugEventInfo debugInfo;
+    DebugEventInfo2 debugInfo;
     u64 memoryAvailable;
     u64 memoryUsed;
     CfgOverrideStatus overrideStatus;
